@@ -1,33 +1,49 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { Button,FormControl,Input,InputLabel} from '@material-ui/core'
 import './css/App.css'
 import Todos from './components/Todos'
+import db from './config/config'
+import firebase from 'firebase'
 
 function App() {
-  const[todo,setTodo] =useState(['Tack the pen first.','Take the book second'])
+  const[todo,setTodo] =useState([])
   const [input,setInput]=useState('')
-  console.log(input)
+
+  useEffect(()=>{
+    db.collection('todos').orderBy('timestamp','desc').onSnapshot(snapshot=>{
+      console.log(snapshot.docs.map(doc=>doc.data()))
+      setTodo(snapshot.docs.map(doc=>({id: doc.id,todo: doc.data().todo})))
+    })
+
+  },[])
+  
   const handleChange = (e)=>{
        e.preventDefault()
    
-         console.log('is clicked')
-         setTodo([...todo,input])
+         db.collection('todos').add({
+           todo:input,
+           timestamp:firebase.firestore.FieldValue.serverTimestamp()
+         })
          setInput('')
-         console.log('is Todos',todo)
   }
   return (
     <div className="App">
-     <p className='app_title'>Shakil's Daily Worklist</p>
+     <p className='app_title'>Shakil's Daily Worklist 🚀 </p>
       <form>
         <FormControl>
-          <InputLabel >✅Write your Todo</InputLabel>
+          <InputLabel >✅  Write your Todo</InputLabel>
           <Input value={input} onChange={e=>setInput(e.target.value)} />
         </FormControl>
         <Button disabled={!input} type='submit' onClick={handleChange} variant="contained" color="primary">
             add todo
         </Button>
       </form>
-       <Todos todo={todo} />
+      {
+                todo.map(item=>(
+                  <Todos key={item.id} id={item.id} todo={item.todo} />
+                ))
+            }
+       
      
      
     </div>

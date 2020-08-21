@@ -1,3 +1,4 @@
+import firebase from 'firebase'
 const firebaseConfig = {
     apiKey: "AIzaSyBgT-8OkRRpttoUH1iJ22IFhB7crgqJ6S0",
     authDomain: "todo-app-64cc1.firebaseapp.com",
@@ -8,3 +9,7 @@ const firebaseConfig = {
     appId: "1:787794578824:web:0d87b44437c9285bec3e3d",
     measurementId: "G-BCPS1VNQSP"
   };
+const firebaseApp =firebase.initializeApp(firebaseConfig)
+const db = firebaseApp.firestore()
+
+  export  default db
